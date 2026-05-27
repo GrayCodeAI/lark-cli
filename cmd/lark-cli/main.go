@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/spf13/cobra"
 	"github.com/lark-dev/lark-cli/internal/client"
 	"github.com/lark-dev/lark-cli/internal/commands"
+	"github.com/spf13/cobra"
 )
 
 var version = "dev"
