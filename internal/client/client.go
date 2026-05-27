@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 )
 
 type Client struct {
@@ -21,13 +22,20 @@ type Config struct {
 	Token   string `json:"token"`
 }
 
-func configPath() string {
-	dir, _ := os.UserConfigDir()
-	return filepath.Join(dir, "lark-cli", "config.json")
+func configPath() (string, error) {
+	dir, err := os.UserConfigDir()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(dir, "lark-cli", "config.json"), nil
 }
 
 func LoadConfig() (*Config, error) {
-	b, err := os.ReadFile(configPath())
+	path, err := configPath()
+	if err != nil {
+		return nil, err
+	}
+	b, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +47,11 @@ func LoadConfig() (*Config, error) {
 }
 
 func SaveConfig(cfg *Config) error {
-	dir := filepath.Dir(configPath())
+	path, err := configPath()
+	if err != nil {
+		return err
+	}
+	dir := filepath.Dir(path)
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return err
 	}
@@ -47,14 +59,14 @@ func SaveConfig(cfg *Config) error {
 	if err != nil {
 		return err
 	}
-	return os.WriteFile(configPath(), b, 0600)
+	return os.WriteFile(path, b, 0600)
 }
 
 func New(baseURL, token string) *Client {
 	return &Client{
 		BaseURL:    baseURL,
 		Token:      token,
-		httpClient: &http.Client{},
+		httpClient: &http.Client{Timeout: 30 * time.Second},
 	}
 }
 
@@ -84,7 +96,7 @@ func (c *Client) Do(method, path string, body, out any) error {
 	defer resp.Body.Close()
 
 	if resp.StatusCode >= 400 {
-		respBody, _ := io.ReadAll(resp.Body)
+		respBody, _ := io.ReadAll(io.LimitReader(resp.Body, 4096))
 		return fmt.Errorf("%d: %s", resp.StatusCode, string(respBody))
 	}
 
@@ -104,4 +116,15 @@ func (c *Client) Login(host, token string) error {
 		return fmt.Errorf("auth failed: %w", err)
 	}
 	return SaveConfig(&Config{BaseURL: host, Token: token})
+}
+
+func DeleteConfig() error {
+	path, err := configPath()
+	if err != nil {
+		return err
+	}
+	if err := os.Remove(path); err != nil && !os.IsNotExist(err) {
+		return err
+	}
+	return nil
 }
