@@ -6,25 +6,20 @@
 <p align="center">
   <a href="https://go.dev"><img src="https://img.shields.io/badge/Go-1.22+-00ADD8?style=flat-square&logo=go" alt="Go"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue?style=flat-square" alt="MIT License"></a>
-  <a href="https://github.com/lark-dev/lark-cli/actions"><img src="https://img.shields.io/github/actions/workflow/status/lark-dev/lark-cli/ci.yml?branch=main&style=flat-square&label=CI" alt="CI"></a>
-  <a href="https://goreportcard.com/report/github.com/lark-dev/lark-cli"><img src="https://goreportcard.com/badge/github.com/lark-dev/lark-cli?style=flat-square" alt="Go Report Card"></a>
+  <a href="https://github.com/GrayCodeAI/lark-cli/actions"><img src="https://img.shields.io/github/actions/workflow/status/GrayCodeAI/lark-cli/ci.yml?branch=main&style=flat-square&label=CI" alt="CI"></a>
+  <a href="https://goreportcard.com/report/github.com/GrayCodeAI/lark-cli"><img src="https://goreportcard.com/badge/github.com/GrayCodeAI/lark-cli?style=flat-square" alt="Go Report Card"></a>
 </p>
 
 ---
 
-Lark CLI is the official command-line client for [Lark](https://github.com/lark-dev/lark-core), an agent-native messaging platform built for teams that work alongside AI agents. Manage channels, messages, workflows, notifications, billing, and more -- all from your terminal. Designed for automation, scripting, and developers who prefer the keyboard.
+Lark CLI is the official command-line client for [Lark](https://github.com/GrayCodeAI/lark-daemon), an agent-native messaging platform built for teams that work alongside AI agents. Manage channels, messages, notifications, and more -- all from your terminal. Designed for automation, scripting, and developers who prefer the keyboard.
 
 ## Features
 
 - **Messages** -- list, send, edit, search, and thread messages across channels
 - **Channels** -- browse channels, pinned messages, and channel metadata
 - **Notifications** -- view, filter, and mark notifications as read
-- **Calls** -- list and review recent call history
-- **Workflows** -- list and trigger workspace workflows programmatically
-- **Billing** -- inspect workspace billing status and plan details
-- **Usage** -- view API and resource usage metrics per workspace
-- **Integrations** -- browse available integrations and manage workspace installs
-- **SSO & Auth** -- login with API keys or JWTs, manage sessions from the CLI
+- **Auth** -- login with API keys or JWTs, manage sessions from the CLI
 - **Tasks** -- list and filter tasks by status across workspaces
 - **Agents** -- monitor agent status and availability
 - **Files** -- browse uploaded files in a workspace
@@ -35,21 +30,21 @@ Lark CLI is the official command-line client for [Lark](https://github.com/lark-
 ### Go install
 
 ```bash
-go install github.com/lark-dev/lark-cli/cmd/lark-cli@latest
+go install github.com/GrayCodeAI/lark-cli/cmd/lark-cli@latest
 ```
 
 ### Binary downloads
 
-Download pre-built binaries from the [Releases](https://github.com/lark-dev/lark-cli/releases) page.
+Download pre-built binaries from the [Releases](https://github.com/GrayCodeAI/lark-cli/releases) page.
 
 ```bash
 # Linux (amd64)
-curl -sL https://github.com/lark-dev/lark-cli/releases/latest/download/lark-cli-linux-amd64 -o lark-cli
+curl -sL https://github.com/GrayCodeAI/lark-cli/releases/latest/download/lark-cli-linux-amd64 -o lark-cli
 chmod +x lark-cli
 sudo mv lark-cli /usr/local/bin/
 
 # macOS (arm64)
-curl -sL https://github.com/lark-dev/lark-cli/releases/latest/download/lark-cli-darwin-arm64 -o lark-cli
+curl -sL https://github.com/GrayCodeAI/lark-cli/releases/latest/download/lark-cli-darwin-arm64 -o lark-cli
 chmod +x lark-cli
 sudo mv lark-cli /usr/local/bin/
 ```
@@ -65,7 +60,7 @@ brew install lark-cli
 ### Build from source
 
 ```bash
-git clone https://github.com/lark-dev/lark-cli.git
+git clone https://github.com/GrayCodeAI/lark-cli.git
 cd lark-cli
 make build
 ```
