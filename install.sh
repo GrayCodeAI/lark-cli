@@ -29,8 +29,18 @@ esac
 # Get latest release tag
 TAG=$(curl -fsSL "https://api.github.com/repos/$REPO/releases/latest" 2>/dev/null | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/' || echo "")
 
+# Fallback to known tag if API fails (private repos)
 if [ -z "$TAG" ]; then
-  echo "⚠️  No releases found, building from source..."
+  TAG="v0.1.0"
+fi
+
+# Try downloading prebuilt binary
+URL="https://github.com/$REPO/releases/download/$TAG/${BINARY}-${PLATFORM}-${ARCH}"
+echo "📥 Downloading $TAG..."
+if curl -fsSL "$URL" -o "$INSTALL_DIR/$BINARY" 2>/dev/null; then
+  chmod +x "$INSTALL_DIR/$BINARY"
+else
+  echo "⚠️  Download failed, building from source..."
   
   # Check prerequisites
   if ! command -v go &>/dev/null; then
@@ -60,11 +70,6 @@ if [ -z "$TAG" ]; then
   
   cd /
   rm -rf "$TMPDIR"
-else
-  echo "📦 Downloading $TAG..."
-  URL="https://github.com/$REPO/releases/download/$TAG/${BINARY}-${PLATFORM}-${ARCH}"
-  curl -fsSL "$URL" -o "$INSTALL_DIR/$BINARY"
-  chmod +x "$INSTALL_DIR/$BINARY"
 fi
 
 # Verify
