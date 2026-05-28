@@ -247,7 +247,7 @@ func (c *Config) ListNotifications(unreadOnly bool) error {
 	fmt.Fprintln(w, "ID\tType\tTitle\tRead")
 	for _, n := range notifications {
 		read := "no"
-		if n["is_read"].(bool) {
+		if isRead, ok := n["is_read"].(bool); ok && isRead {
 			read = "yes"
 		}
 		fmt.Fprintf(w, "%s\t%s\t%s\t%s\n", n["id"], n["type"], n["title"], read)
