@@ -66,6 +66,13 @@ func init() {
 	rootCmd.AddCommand(triggerWorkflowCmd)
 	rootCmd.AddCommand(billingCmd)
 	rootCmd.AddCommand(usageCmd)
+
+	// Daemon management
+	rootCmd.AddCommand(daemonCmd)
+	daemonCmd.AddCommand(daemonListCmd)
+	daemonCmd.AddCommand(daemonShowCmd)
+	daemonCmd.AddCommand(daemonWakeCmd)
+	daemonCmd.AddCommand(daemonRestartCmd)
 }
 
 var loginCmd = &cobra.Command{
