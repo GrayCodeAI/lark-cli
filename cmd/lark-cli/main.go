@@ -12,7 +12,7 @@ import (
 var version = "dev"
 
 var rootCmd = &cobra.Command{
-	Use:     "lark-cli",
+	Use:     "lark",
 	Short:   "CLI client for the Lark messaging platform",
 	Long:    "Command-line interface for interacting with Lark agent-native messaging platform.",
 	Version: version,
@@ -35,19 +35,24 @@ func loadClient() (*client.Client, error) {
 }
 
 func init() {
-	// Auth
+	// Polished commands (new .lark/config.yaml based)
+	rootCmd.AddCommand(commands.InitCmd)
+	rootCmd.AddCommand(commands.ConnectCmd)
+	rootCmd.AddCommand(commands.SendCmd)
+	rootCmd.AddCommand(commands.StatusCmd)
+	rootCmd.AddCommand(commands.AgentsListCmd)
+	rootCmd.AddCommand(commands.ChannelsListCmd)
+
+	// Legacy auth (global config based)
 	rootCmd.AddCommand(loginCmd)
 	rootCmd.AddCommand(logoutCmd)
 	rootCmd.AddCommand(whoamiCmd)
 
 	// Resources
 	rootCmd.AddCommand(workspacesCmd)
-	rootCmd.AddCommand(channelsCmd)
 	rootCmd.AddCommand(messagesCmd)
-	rootCmd.AddCommand(sendCmd)
 	rootCmd.AddCommand(searchCmd)
 	rootCmd.AddCommand(tasksCmd)
-	rootCmd.AddCommand(agentsCmd)
 	rootCmd.AddCommand(filesCmd)
 	rootCmd.AddCommand(pinsCmd)
 	rootCmd.AddCommand(approvalsCmd)
@@ -67,7 +72,7 @@ func init() {
 	rootCmd.AddCommand(billingCmd)
 	rootCmd.AddCommand(usageCmd)
 
-	// Daemon management
+	// Daemon management (defined in daemon.go)
 	rootCmd.AddCommand(daemonCmd)
 	daemonCmd.AddCommand(daemonListCmd)
 	daemonCmd.AddCommand(daemonShowCmd)
@@ -129,22 +134,6 @@ var workspacesCmd = &cobra.Command{
 	},
 }
 
-var channelsCmd = &cobra.Command{
-	Use:   "channels",
-	Short: "List channels in a workspace",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		cl, err := loadClient()
-		if err != nil {
-			return err
-		}
-		ws, _ := cmd.Flags().GetString("workspace")
-		if ws == "" {
-			return fmt.Errorf("--workspace is required")
-		}
-		return commands.New(cl).ListChannels(ws)
-	},
-}
-
 var messagesCmd = &cobra.Command{
 	Use:   "messages",
 	Short: "List messages in a channel",
@@ -159,23 +148,6 @@ var messagesCmd = &cobra.Command{
 		}
 		limit, _ := cmd.Flags().GetInt("limit")
 		return commands.New(cl).ListMessages(ch, limit)
-	},
-}
-
-var sendCmd = &cobra.Command{
-	Use:   "send",
-	Short: "Send a message to a channel",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		cl, err := loadClient()
-		if err != nil {
-			return err
-		}
-		ch, _ := cmd.Flags().GetString("channel")
-		content, _ := cmd.Flags().GetString("content")
-		if ch == "" || content == "" {
-			return fmt.Errorf("--channel and --content are required")
-		}
-		return commands.New(cl).SendMessage(ch, content)
 	},
 }
 
@@ -207,18 +179,6 @@ var tasksCmd = &cobra.Command{
 		}
 		status, _ := cmd.Flags().GetString("status")
 		return commands.New(cl).ListTasks(ws, status)
-	},
-}
-
-var agentsCmd = &cobra.Command{
-	Use:   "agents",
-	Short: "List agents in a workspace",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		cl, err := loadClient()
-		if err != nil {
-			return err
-		}
-		return commands.New(cl).ListAgents()
 	},
 }
 
@@ -489,11 +449,10 @@ func init() {
 	loginCmd.Flags().String("host", "http://127.0.0.1:4001", "Lark server URL")
 	loginCmd.Flags().String("token", "", "JWT or API key")
 
-	channelsCmd.Flags().String("workspace", "", "Workspace ID")
+	commands.ChannelsListCmd.Flags().String("workspace", "", "Workspace ID (overrides config)")
+
 	messagesCmd.Flags().String("channel", "", "Channel ID")
 	messagesCmd.Flags().Int("limit", 10, "Max messages")
-	sendCmd.Flags().String("channel", "", "Channel ID")
-	sendCmd.Flags().String("content", "", "Message content")
 	searchCmd.Flags().String("channel", "", "Channel ID (optional, search all if empty)")
 	tasksCmd.Flags().String("workspace", "", "Workspace ID")
 	tasksCmd.Flags().String("status", "", "Filter: todo|in_progress|review|done")
